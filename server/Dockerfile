@@ -1,15 +1,19 @@
-FROM ubuntu:latest
+FROM php:8.2-apache
 
-RUN apt-get -y update && apt-get -y upgrade
-RUN apt-get install -y apache2 openssh-server
-ADD ./script.sh /root/script.sh
-RUN mkdir /root/.ssh
-ADD ./authorized_keys /root/.ssh/authorized_keys
-RUN sed 's/#PermitRootLogin prohibit-password/PermitRootLogin prohibit-password/' -i /etc/ssh/sshd_config
-WORKDIR /var/www/html
+RUN apt-get update \
+    && apt-get install -y git unzip \
+    && docker-php-ext-install mysqli pdo pdo_mysql
 
-EXPOSE 22
-EXPOSE 80
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-CMD ["bash", "/root/script.sh"]
+RUN git clone https://github.com/MoryKadoch/todo_php.git /var/www/todo_php
 
+WORKDIR /var/www/todo_php/server
+RUN composer install
+RUN cp /var/www/todo_php/server/.env_example /var/www/todo_php/server/.env
+RUN echo "DB_HOST=localhost\nDB_NAME=todo_db\nDB_USER=username123\nDB_PASS=password123" > /var/www/todo_php/server/.env
+
+RUN a2enmod rewrite
+RUN chown -R www-data:www-data /var/www
+
+RUN sed -i 's!/var/www/html!/var/www/todo_php/server!g' /etc/apache2/sites-available/000-default.conf
