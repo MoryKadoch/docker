@@ -1,0 +1,59 @@
+version: "3"
+
+networks:
+  DMZ1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.50.0/24
+  DMZ2:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.75.0/24
+
+services:
+  service1:
+    build:
+      context: server
+    hostname: server1
+    networks:
+      - DMZ1
+      - DMZ2
+    networks:
+      DMZ1:
+        ipv4_address: 10.0.50.10
+      DMZ2:
+        ipv4_address: 192.168.75.10
+  service2:
+    build:
+      context: server
+    hostname: server2
+    networks:
+      - DMZ1
+      - DMZ2
+    networks:
+      DMZ1:
+        ipv4_address: 10.0.50.20
+      DMZ2:
+        ipv4_address: 192.168.75.20
+  service3:
+    build:
+      context: loadbalancer
+    hostname: loadbalancer
+    networks:
+      - DMZ1
+    networks:
+      DMZ1:
+        ipv4_address: 10.0.50.5
+  service4:
+    build:
+      context: bdd
+    volumes:
+      - './bdd/html:/var/html'
+    hostname: bdd
+    networks:
+      - DMZ2
+    networks:
+      DMZ2:
+        ipv4_address: 192.168.75.50
