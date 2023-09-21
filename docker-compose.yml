@@ -13,7 +13,7 @@ networks:
         - subnet: 192.168.75.0/24
 
 services:
-  service1:
+  server1:
     build:
       context: server
     hostname: server1
@@ -25,7 +25,7 @@ services:
         ipv4_address: 10.0.50.10
       DMZ2:
         ipv4_address: 192.168.75.10
-  service2:
+  server2:
     build:
       context: server
     hostname: server2
@@ -37,7 +37,7 @@ services:
         ipv4_address: 10.0.50.20
       DMZ2:
         ipv4_address: 192.168.75.20
-  service3:
+  loadbalancer:
     build:
       context: loadbalancer
     hostname: loadbalancer
