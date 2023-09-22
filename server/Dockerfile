@@ -17,3 +17,5 @@ RUN a2enmod rewrite
 RUN chown -R www-data:www-data /var/www
 
 RUN sed -i 's!/var/www/html!/var/www/todo_php/server!g' /etc/apache2/sites-available/000-default.conf
+
+CMD ["apache2-foreground"]
